@@ -1,6 +1,6 @@
 name: "DIRECT"
 desc: "rules"
-rules: #!replace
+rules:
   - DOMAIN-SUFFIX,acl4.ssr,DIRECT
   - DOMAIN-SUFFIX,ip6-localhost,DIRECT
   - DOMAIN-SUFFIX,ip6-loopback,DIRECT
@@ -8816,6 +8816,7 @@ rules: #!replace
   - DOMAIN,qinzhou360.com,DIRECT
   - DOMAIN,e0575.com,DIRECT
   - DOMAIN,423down.com,DIRECT
+
 
 
 

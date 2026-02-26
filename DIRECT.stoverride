@@ -8809,10 +8809,11 @@ rules:
   - IP-CIDR,43.160.0.0/16,DIRECT,no-resolve
   - IP-CIDR,101.32.0.0/16,DIRECT,no-resolve
   - GEOIP,CN,DIRECT,no-resolve
-  - DOMAIN,5eplay.com
-  - DOMAIN,5eplaycdn.com
-  - DOMAIN,qinzhou360.com
-  - DOMAIN,e0575.com
-  - DOMAIN,423down.com
+  - DOMAIN,5eplay.com,DIRECT
+  - DOMAIN,5eplaycdn.com,DIRECT
+  - DOMAIN,qinzhou360.com,DIRECT
+  - DOMAIN,e0575.com,DIRECT
+  - DOMAIN,423down.com,DIRECT
+
 
 

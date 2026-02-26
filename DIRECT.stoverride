@@ -1,4 +1,4 @@
-payload:
+rules:
   - DOMAIN-SUFFIX,acl4.ssr,DIRECT
   - DOMAIN-SUFFIX,ip6-localhost,DIRECT
   - DOMAIN-SUFFIX,ip6-loopback,DIRECT
@@ -8814,4 +8814,5 @@ payload:
   - DOMAIN,qinzhou360.com
   - DOMAIN,e0575.com
   - DOMAIN,423down.com
+
 

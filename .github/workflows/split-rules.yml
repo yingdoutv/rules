@@ -1,0 +1,79 @@
+name: Split rules.list to direct/reject
+
+on:
+  push:
+    branches: [main]        # 如果默认分支是 master，改成 master
+    paths:
+      - rules.list
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+concurrency:
+  group: split-rules
+  cancel-in-progress: true
+
+jobs:
+  split:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Split rules.list
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+
+          src = Path("rules.list")
+          direct, reject = [], []
+          seen_d, seen_r = set(), set()
+          skipped = 0
+
+          for raw in src.read_text(encoding="utf-8").splitlines():
+              line = raw.strip()
+              if not line or line.startswith("#"):
+                  continue
+              parts = [p.strip() for p in line.split(",")]
+              if len(parts) < 3:
+                  skipped += 1
+                  continue
+              policy = None
+              for i, p in enumerate(parts):
+                  if p.upper() in ("DIRECT", "REJECT"):
+                      policy = p.upper()
+                      del parts[i]
+                      break
+              if policy is None:
+                  skipped += 1
+                  continue
+              rule = ",".join(parts)
+              if policy == "DIRECT":
+                  if rule not in seen_d:
+                      seen_d.add(rule); direct.append(rule)
+              else:
+                  if rule not in seen_r:
+                      seen_r.add(rule); reject.append(rule)
+
+          Path("direct.list").write_text("\n".join(direct) + "\n", encoding="utf-8")
+          Path("reject.list").write_text("\n".join(reject) + "\n", encoding="utf-8")
+          print(f"direct={len(direct)} reject={len(reject)} skipped={skipped}")
+          with open("summary.md", "w", encoding="utf-8") as f:
+              f.write(f"rules.list 拆分完成：direct **{len(direct)}** 条，reject **{len(reject)}** 条\n")
+          PY
+          cat summary.md >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Commit if changed
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add direct.list reject.list
+          if git diff --cached --quiet; then
+            echo "no changes"
+          else
+            git commit -m "chore: update direct.list / reject.list from rules.list"
+            git push
+          fi
